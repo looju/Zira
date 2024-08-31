@@ -19,6 +19,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { UserInactivityProvider } from "Context/UserInactivity";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,7 +40,10 @@ const RootLayoutNav = () => {
   }
   return (
     <Stack>
-      {/* <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="onboarding"
+        options={{ headerShown: false, animation: "none" }}
+      />
       <Stack.Screen
         name="login"
         options={{
@@ -108,8 +112,12 @@ const RootLayoutNav = () => {
           presentation: "modal",
           headerStyle: { backgroundColor: Colors.white },
         }}
-      /> */}
+      />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(modals)/lock"
+        options={{ headerShown: false, animation: "none" }}
+      />
     </Stack>
   );
 };
@@ -119,11 +127,13 @@ const Layout = () => {
   return (
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
-        <PaperProvider>
-          <NativeBaseProvider>
-            <RootLayoutNav />
-          </NativeBaseProvider>
-        </PaperProvider>
+        <UserInactivityProvider>
+          <PaperProvider>
+            <NativeBaseProvider>
+              <RootLayoutNav />
+            </NativeBaseProvider>
+          </PaperProvider>
+        </UserInactivityProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

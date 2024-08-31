@@ -5,17 +5,23 @@ import {
   View,
   Dimensions,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useAssets } from "expo-asset";
 import { ResizeMode, Video } from "expo-av";
 import Colors from "@/constants/Colors";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { defaultStyles } from "@/constants/Styles";
+import { Modal, Portal, Button, PaperProvider } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const { height, width } = Dimensions.get("screen");
 
 const OnBoarding = () => {
   const [assets, error] = useAssets([require("../assets/video/video2.mp4")]);
+  const [visible, setVisible] = useState(false);
+  const { sessionExpired } = useLocalSearchParams();
+  const [sessionValue, setSessionValue] = useState(sessionExpired);
+
   return (
     <View style={styles.container}>
       {assets && (
@@ -28,25 +34,41 @@ const OnBoarding = () => {
           resizeMode={ResizeMode.COVER}
         />
       )}
+      {sessionExpired == "true" && (
+        <Portal>
+          <Modal
+            visible={sessionValue == "true" ? true : false}
+            contentContainerStyle={styles.modal}
+            onDismiss={() => null}
+          >
+            <MaterialIcons name="error" size={40} color={Colors.red} />
+            <Text style={styles.modalText}>Your session has expired</Text>
+            <Button
+              style={{ marginTop: 10, borderColor: Colors.white }}
+              mode="outlined"
+              labelStyle={{ color: Colors.white }}
+              onPress={() => setSessionValue("false")}
+            >
+              Proceed
+            </Button>
+          </Modal>
+        </Portal>
+      )}
       <View style={styles.leadTextView}>
-        <Text style={styles.leadText}>Ready to change how you move money?</Text>
+        <Text style={styles.leadText}>
+          Ready to change how you move money? Let's Zirafy!
+        </Text>
       </View>
       <View style={{ flex: 0.9 }} />
       <View style={styles.buttons}>
         <Link href="/login" asChild style={defaultStyles.pillButton}>
-          <TouchableOpacity
-            style={defaultStyles.pillButton}
-            activeOpacity={0.1}
-          >
-            <Text style={styles.btnText1}>Login</Text>
+          <TouchableOpacity style={styles.btn2} activeOpacity={0.1}>
+            <Text style={[styles.btnText1, { fontSize: 15 }]}>Login</Text>
           </TouchableOpacity>
         </Link>
         <Link href="/signup" asChild style={defaultStyles.pillButton}>
-          <TouchableOpacity
-            style={defaultStyles.pillButton}
-            activeOpacity={0.1}
-          >
-            <Text style={[styles.btnText1, { fontSize: 12 }]}>Sign up</Text>
+          <TouchableOpacity style={styles.btn} activeOpacity={0.1}>
+            <Text style={[styles.btnText1, { fontSize: 15 }]}>Sign up</Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -85,5 +107,40 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "bold",
     fontFamily: "SpaceMono",
+  },
+  modal: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+
+    alignItems: "center",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+    height: 200,
+    alignSelf: "center",
+  },
+  modalText: {
+    marginVertical: 15,
+    textAlign: "center",
+    color: Colors.white,
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  btn: {
+    padding: 10,
+    height: 70,
+    width: 120,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.green,
+  },
+  btn2: {
+    padding: 10,
+    height: 70,
+    width: 120,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.primary2,
   },
 });

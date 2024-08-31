@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GetListingsData } from "Services/Api/Listings";
@@ -19,7 +20,7 @@ import Colors from "@/constants/Colors";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Link } from "expo-router";
 import CachedImage from "expo-cached-image";
-import Image from "expo-cached-image";
+// import Image from "expo-cached-image";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -89,6 +90,16 @@ const Crypto = () => {
     }, 5000);
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      clearInterval(
+        setInterval(() => {
+          dataIds.refetch();
+        }, 2000)
+      );
+    }, 60000);
+  }, []);
+
   const RenderCoins = ({
     name,
     price,
@@ -99,7 +110,12 @@ const Crypto = () => {
     <Link
       href={{
         pathname: "/coins/coinDetails",
-        params: { id: id, name: name.toLocaleUpperCase(), symbol: symbol },
+        params: {
+          id: id,
+          name: name.toLocaleUpperCase(),
+          symbol: symbol,
+          price: price,
+        },
       }}
       asChild
     >
@@ -130,7 +146,7 @@ const Crypto = () => {
       source={{ uri: image }}
       style={styles.image}
       resizeMode="cover"
-      cacheKey={"disk"}
+      key={id}
     />
   );
 

@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Dimensions,
+  Linking,
   ScrollView,
   SectionList,
   StyleSheet,
@@ -8,21 +9,33 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { lineDataItem } from "react-native-gifted-charts";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons, MaterialIcons, Octicons } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome5,
+  Foundation,
+  Ionicons,
+  MaterialIcons,
+  Octicons,
+} from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { BlurView } from "expo-blur";
 import { useQuery } from "@tanstack/react-query";
 import { useHeaderHeight } from "@react-navigation/elements";
 import axios from "axios";
+import { LineChart } from "react-native-gifted-charts";
 import { defaultStyles } from "@/constants/Styles";
+import { numberFormat } from "@/hooks/FormatNumbers";
+import { RandomPrices } from "@/hooks/RandomPrices";
+import moment from "moment";
 
 const { height, width } = Dimensions.get("screen");
 
 const CoinDetails = () => {
-  const { id, name, symbol } = useLocalSearchParams();
+  const { id, name, symbol, price } = useLocalSearchParams();
   const router = useRouter();
   const key = process.env.EXPO_PUBLIC_COINBASEKEY;
   const headerHeight = useHeaderHeight();
@@ -77,6 +90,7 @@ const CoinDetails = () => {
         <SectionList
           sections={[{ data: [{ title: "Chart" }] }]}
           contentInsetAdjustmentBehavior="automatic"
+          showsVerticalScrollIndicator={false}
           style={{
             paddingTop: headerHeight * 0.3,
             backgroundColor: Colors.black,
@@ -168,15 +182,115 @@ const CoinDetails = () => {
           )}
           renderItem={({ item }) => (
             <>
-              <View style={styles.chartView}></View>
+              <View style={styles.chartView}>
+                <LineChart
+                  data={RandomPrices(price)}
+                  color="#fff"
+                  thickness={3}
+                  dataPointsColor={Colors.white}
+                  initialSpacing={10}
+                  spacing={30}
+                  yAxisColor={Colors.white}
+                  xAxisColor={Colors.white}
+                  xAxisThickness={1.5}
+                  yAxisThickness={1.5}
+                  hideRules
+                  height={height * 0.5}
+                  yAxisIndicesColor={Colors.white}
+                  yAxisLabelPrefix="$"
+                  yAxisTextStyle={{ color: Colors.white }}
+                  yAxisLabelWidth={50}
+                  xAxisLabelTextStyle={{ color: Colors.white }}
+                  curved
+                  curvature={0.25}
+                  scrollToEnd={true}
+                  isAnimated
+                  width={width}
+                  lineGradient
+                  lineGradientStartColor={Colors.primary}
+                  lineGradientEndColor={Colors.primary2}
+                  focusEnabled
+                  showTextOnFocus
+                  showDataPointLabelOnFocus
+                  focusedDataPointColor={Colors.red}
+                  focusedDataPointHeight={50}
+                  focusedDataPointShape="square"
+                  textColor={Colors.white}
+                  textFontSize={12}
+                />
+              </View>
               <View
                 style={[
                   defaultStyles.block,
                   { marginTop: 20, backgroundColor: Colors.black },
                 ]}
               >
-                <Text style={styles.subtitle}>Overview</Text>
-                <Text style={styles.desc}>Coin description goes here</Text>
+                <Text style={styles.semiHeaders}>Overview</Text>
+                <Text style={styles.desc}>
+                  {Object.values(data?.data?.data.data)[0]
+                    .description.replace(/\s+/g, " ")
+                    .trim()}
+                </Text>
+                <Text style={styles.semiHeaders}>Launched</Text>
+                <Text style={styles.desc}>
+                  {moment(
+                    Object.values(data?.data?.data.data)[0].date_added
+                  ).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                </Text>
+                <View>
+                  <Text style={styles.semiHeaders}>Tags</Text>
+                  {Object.values(data?.data?.data.data)[0].tags.map(
+                    (name: string) => (
+                      <View>
+                        <Text style={styles.tags}>- {name}</Text>
+                      </View>
+                    )
+                  )}
+                </View>
+                <Text style={styles.semiHeaders}>Official Channels</Text>
+                <View style={[styles.iconsRow]}>
+                  <Foundation
+                    name="web"
+                    size={30}
+                    color={Colors.white}
+                    onPress={async () =>
+                      await Linking.openURL(
+                        Object.values(data?.data?.data.data)[0].urls.website[0]
+                      )
+                    }
+                  />
+                  <Ionicons
+                    name="newspaper-outline"
+                    size={30}
+                    color={Colors.white}
+                    onPress={async () =>
+                      await Linking.openURL(
+                        Object.values(data?.data?.data.data)[0].urls
+                          .technical_doc[0]
+                      )
+                    }
+                  />
+                  <Entypo
+                    name="twitter"
+                    size={30}
+                    color={Colors.blue}
+                    onPress={async () =>
+                      await Linking.openURL(
+                        Object.values(data?.data?.data.data)[0].urls.twitter[0]
+                      )
+                    }
+                  />
+                  <FontAwesome5
+                    name="reddit"
+                    size={30}
+                    color={Colors.red}
+                    onPress={async () =>
+                      await Linking.openURL(
+                        Object.values(data?.data?.data.data)[0].urls.reddit[0]
+                      )
+                    }
+                  />
+                </View>
               </View>
             </>
           )}
@@ -203,6 +317,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     color: Colors.white,
+    width: width * 0.8,
+    textAlign: "justify",
   },
   btnTxt: {
     fontSize: 14,
@@ -247,7 +363,29 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
   },
   chartView: {
-    height: height * 0.7,
-    backgroundColor: Colors.gray,
+    height: height * 0.55,
+    backgroundColor: Colors.black,
+    alignSelf: "flex-start",
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  semiHeaders: {
+    color: Colors.white,
+    fontWeight: "800",
+    fontSize: 18,
+  },
+  tags: {
+    marginHorizontal: 5,
+    width: width * 0.9,
+    textAlign: "justify",
+    color: Colors.white,
+    marginTop: 10,
+  },
+  iconsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: width * 0.8,
+    marginVertical: 10,
+    marginBottom: height * 0.05,
   },
 });
