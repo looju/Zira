@@ -46,83 +46,41 @@ const Chat = () => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const dbChatLocation = `/users/${userId}/chat`;
 
-  // useLayoutEffect(() => {
-  //   push(ref(db, dbChatLocation), {
-  //     _id: nanoid(),
-  //     text: "Hello👋! I am Zira😀, your personal AI assistant. I'm always here for you so you can fel free to tell me just about anything. However, being that i'm still in beta mode👶🏻, you can only ask me questions twice within a minute and fifty times a day. let's discuss!🤩",
-  //     createdAt: new Date(),
-  //     user: {
-  //       _id: "Gemini-AI",
-  //       name: "Z",
-  //     },
-  //   });
-  // }, []);
-  const dum = {
-    "-O5svSwDJA5pTHJ9OsXr": [
-      {
-        _id: "0fe133bb-f480-4010-aa06-a84885faf8fc",
-        text: "Give me a good life advice",
-        user: ["Object"],
-      },
-    ],
-    "-O5svTlQHfX5ndcHQKvt": [
-      {
-        _id: "0fe133bb-f480-4010-aa06-a84885faf8fc",
-        text: "Give me a good life advice",
-        user: ["Object"],
-      },
-    ],
-  };
-
-  // Object.keys(dum).forEach((l) => {
-  //   console.log(l, "kkk");
-  // });
-
-  // const map = Object.keys(dum).map((k) => ({
-  //   _id: Object.values(dum[k])[0]._id,
-  //   text: Object.values(dum[k])[0].text,
-  //   createdAt: Object.values(dum[k])[0].createdAt,
-  //   user: {
-  //     _id: Object.values(dum[k])[0].user[0]._id,
-  //     name: Object.values(dum[k])[0].user[0].name,
-  //   },
-  // }));
-
-  // console.log(map, "kkkkkk");
-
-  // console.log(messages);
-
-  // console.log(Object.values(dum), "duuuu");
-
-  useEffect(() => {
-    push(ref(db, dbChatLocation), messages);
-  }, [sendToServer]);
-
   useEffect(() => {
     return onValue(ref(db, dbChatLocation), (querySnapShot) => {
       let data = querySnapShot.val() || [];
       if (data !== null) {
-        console.log(data, "from server");
-        const mergeData = Object.keys(data).map((k) => ({
-          _id: Object.values(data[k])[0]._id,
-          text: Object.values(data[k])[0].text,
+        let ResultArray = Object.entries(data)
+          .toReversed()
+          .map((e) => Object.assign(e[1], { key: e[0] }));
+        // console.log(ResultArray, "kkkkk");
+        var Airesult = ResultArray.map((value) => ({
+          _id: value.AImsg._id,
+          text: value.AImsg.text,
           user: {
-            _id: Object.values(data[k])[0].user[0]._id,
-            name: Object.values(data[k])[0].user[0].name,
+            _id: value.AImsg.user._id,
+            name: value.AImsg.user.name,
           },
         }));
-        console.log(mergeData, "merrg");
-        //     setMessages((previousMessages) =>
-        //   GiftedChat.append(previousMessages, [mergeData])
-        // );
+
+        var Userresult = ResultArray.map((value) => ({
+          _id: value.userMsg._id,
+          text: value.userMsg.text,
+          user: {
+            _id: value.userMsg.user._id,
+            name: value.userMsg.user.name,
+          },
+        }));
+        console.log(Airesult.concat(Userresult));
+        const allMsgs = Airesult.concat(Userresult);
+        setMessages(allMsgs);
       }
     });
   }, [isTyping]);
 
   const onSend = async (newMessages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    setMessages((previousMessages) => ({ ...previousMessages, newMessages }));
+    console.log(newMessages, "user input");
     setIsTyping(true);
     const prompt = newMessages[0].text;
     const result = await model.generateContent(prompt);
@@ -135,11 +93,20 @@ const Chat = () => {
         name: "Chatbot",
       },
     };
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, [AImsg])
-    );
+    const userMsg = {
+      _id: newMessages[0]._id,
+      text: newMessages[0].text,
+      createdAt: newMessages[0].createdAt,
+      user: {
+        _id: userId,
+        name: "Human",
+      },
+    };
+    const AllMsgs = { userMsg, AImsg };
+    // console.log(AllMsgs, "rainnnnn");
+    push(ref(db, dbChatLocation), AllMsgs);
+    setMessages((prev) => ({ ...prev, AllMsgs }));
     setIsTyping(false);
-    setSendToServer(true);
   };
 
   const parsePatterns = useCallback(() => {
