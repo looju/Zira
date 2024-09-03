@@ -22,6 +22,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import Horizontal from "Components/SortableList";
+import Animated, { FadeIn } from "react-native-reanimated";
 import WidgetList from "Components/SortableList/WidgetList";
 import { useHeaderHeight } from "@react-navigation/elements";
 
@@ -54,10 +55,11 @@ const Home = () => {
   };
 
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={styles.main}
       contentContainerStyle={{ paddingTop: headerHeight * 0.4 }}
       showsVerticalScrollIndicator={false}
+      entering={FadeIn.duration(1000).springify().stiffness(0.2)}
     >
       <View style={styles.account}>
         <View style={styles.row}>
@@ -67,13 +69,13 @@ const Home = () => {
       </View>
       <View style={styles.actionRow}>
         <RoundBtn
-          text={"Add money"}
+          text={"Transact"}
           icon="bank-plus"
           onPress={() => addMoney()}
         />
         <RoundBtn
-          text={"Exchange"}
-          icon="swap-horizontal"
+          text={"Clear trx"}
+          icon="cash-remove"
           onPress={() => clearTransaction()}
         />
         <Dropdown />
@@ -82,7 +84,7 @@ const Home = () => {
       {transactions.length === 0 && (
         <Text style={styles.noTrx}>No transactions yet.</Text>
       )}
-      {transactions.map((transaction) => (
+      {transactions.toReversed().map((transaction) => (
         <View key={transaction.id} style={styles.transaction}>
           <Text style={styles.date}>
             {moment(transaction.date).format("ddd, MMMM Do YYYY, h:mm a")}
@@ -167,7 +169,7 @@ const Home = () => {
       ))}
       {/* <Horizontal /> */}
       <WidgetList />
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 

@@ -51,6 +51,9 @@ const ConfirmSignup = () => {
     firebaseConfig: firebaseConfig,
   });
   const addCountryCode = useCodeStore((state) => state.addCode);
+  const addNumber = useCodeStore((state) => state.addNumber);
+  const addID = useCodeStore((state) => state.addId);
+
   const onHandleConfirmationCode = async () => {
     setLoading(true);
     if (value.length < 6) return;
@@ -67,6 +70,8 @@ const ConfirmSignup = () => {
         };
         push(ref(db, "/users"), userData);
         addCountryCode(userData.country);
+        addNumber(fullNumber);
+        addID(userData.id);
         route.replace("/(tabs)/home");
       }
     } catch (error) {

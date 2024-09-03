@@ -3,6 +3,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { BlurView } from "expo-blur";
 import CustomHeader from "Components/CustomHeader";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   return (
@@ -63,37 +64,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="invest"
+        name="chat"
         options={{
-          title: "Invest",
+          title: "Chat",
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
-              size={focused ? 33 : 24}
-              name="line-chart"
+            <Ionicons
+              name="chatbubble"
               color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="transfers"
-        options={{
-          title: "Transfers",
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
               size={focused ? 33 : 24}
-              name="exchange"
-              color={color}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome size={focused ? 33 : 24} name="cog" color={color} />
           ),
         }}
       />

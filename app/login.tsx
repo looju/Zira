@@ -18,18 +18,9 @@ import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { FirebaseOptions, getApp, initializeApp } from "firebase/app";
 import app, { db } from "../Config/firebase";
-import {
-  FirebaseRecaptchaVerifierModal,
-  FirebaseRecaptchaBanner,
-} from "expo-firebase-recaptcha";
-import {
-  getAuth,
-  PhoneAuthProvider,
-  signInWithCredential,
-} from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { useFirebaseLogin } from "@itzsunny/firebase-login";
 import { ref, push, onValue, get } from "firebase/database";
-import { Validation, numType } from "@/hooks/numbervalidation";
 import * as LocalAuthentication from "expo-local-authentication";
 import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useStore } from "zustand";
@@ -38,7 +29,7 @@ import { useCodeStore } from "store/CodeStore";
 const { width, height } = Dimensions.get("screen");
 
 const Login = () => {
-  const [countryCode, setCountryCode] = useState("+234");
+  const [countryCode, setCountryCode] = useState("");
   const [number, setNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,6 +48,8 @@ const Login = () => {
     firebaseConfig: firebaseConfig,
   });
   const addCountryCode = useCodeStore((state) => state.addCode);
+  const addNumber = useCodeStore((state) => state.addNumber);
+  const addID = useCodeStore((state) => state.addId);
 
   const onSignIn = async () => {
     setLoading(true);
@@ -72,6 +65,8 @@ const Login = () => {
       console.log(usersArr);
       if (foundUser == true) {
         addCountryCode(usersArr.country);
+        addNumber(fullNumber);
+        addID(usersArr.id);
         isBiometricSupported == true
           ? biometricAuth()
           : route.replace("/(tabs)/home");
@@ -118,8 +113,9 @@ const Login = () => {
           <View style={styles.textInputView}>
             <TextInput
               style={styles.input}
-              keyboardType="number-pad"
-              placeholder="Code"
+              keyboardType="phone-pad"
+              placeholder="CC"
+              placeholderTextColor={Colors.gray2}
               value={countryCode}
               onChangeText={(text) => setCountryCode(text)}
               maxLength={4}
@@ -127,6 +123,7 @@ const Login = () => {
             <TextInput
               style={styles.input2}
               placeholder="Enter your phone number"
+              placeholderTextColor={Colors.gray2}
               keyboardType="phone-pad"
               value={number}
               onChangeText={(text) => setNumber(text)}

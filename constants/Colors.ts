@@ -8,6 +8,7 @@ export default {
   lightGray: "#D8DCE2",
   white: "#fff",
   darkTransparent: "rgba(255,255,255,0.2)",
+  darkTransparent2: "rgba(255,255,255,0.4)",
   gray2: "#808080",
   gray3: "rgba(0,0,0,1)",
   black: "#000",

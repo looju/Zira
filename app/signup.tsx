@@ -10,8 +10,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
+  KeyboardEvent,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
@@ -20,14 +21,16 @@ import app from "../Config/firebase";
 import { getAuth } from "firebase/auth";
 import { FirebaseOptions } from "firebase/app";
 import { Validation } from "@/hooks/numbervalidation";
+import { useCodeStore } from "store/CodeStore";
 
 const { width, height } = Dimensions.get("screen");
 
 const Signup = () => {
-  const [countryCode, setCountryCode] = useState("+234");
+  const [countryCode, setCountryCode] = useState("");
   const [number, setNumber] = useState("");
   const [errrorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const auth = getAuth(app);
   const route = useRouter();
   const recaptchaVerifier = useRef(null);
@@ -69,13 +72,39 @@ const Signup = () => {
     });
   };
 
+  useEffect(() => {
+    function onKeyboardDidShow(e: KeyboardEvent) {
+      // Remove type here if not using TypeScript
+      setKeyboardHeight(e.endCoordinates.height);
+    }
+
+    function onKeyboardDidHide() {
+      setKeyboardHeight(0);
+    }
+
+    const showSubscription = Keyboard.addListener(
+      "keyboardDidShow",
+      onKeyboardDidShow
+    );
+    const hideSubscription = Keyboard.addListener(
+      "keyboardDidHide",
+      onKeyboardDidHide
+    );
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  console.log(keyboardHeight);
+
   return (
     <KeyboardAvoidingView
       style={styles.kav}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 70 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 70 : keyboardHeight * 0.6}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.kav}>
         <View style={defaultStyles.container}>
           {recaptcha}
           <Text style={defaultStyles.header}>Let's get started!</Text>
@@ -86,14 +115,16 @@ const Signup = () => {
             <TextInput
               style={styles.input}
               keyboardType="phone-pad"
-              placeholder="Code"
+              placeholder="CC"
               value={countryCode}
               onChangeText={(text) => setCountryCode(text)}
               maxLength={4}
+              placeholderTextColor={Colors.gray2}
             />
             <TextInput
               style={styles.input2}
               placeholder="Enter your phone number"
+              placeholderTextColor={Colors.gray2}
               keyboardType="phone-pad"
               value={number}
               onChangeText={(text) => setNumber(text)}
@@ -115,13 +146,18 @@ const Signup = () => {
               defaultStyles.pillButton,
               {
                 marginTop: 20,
-                backgroundColor: number !== "" ? Colors.primary2 : Colors.gray,
+                backgroundColor:
+                  number !== "" && countryCode !== ""
+                    ? Colors.primary2
+                    : Colors.gray,
                 width: width * 0.8,
                 alignSelf: "center",
                 borderRadius: 15,
+                paddingBottom: 0,
               },
             ]}
             onPress={onSignup}
+            disabled={(number === "" && countryCode === "") || loading}
           >
             {loading == true ? (
               <ActivityIndicator

@@ -9,8 +9,8 @@ export default {
     userInterfaceStyle: "dark",
     splash: {
       image: "./assets/images/splash.png",
-      resizeMode: "contain",
-      backgroundColor: "#ffffff",
+      resizeMode: "cover",
+      backgroundColor: "#CCC2CA",
     },
     ios: {
       supportsTablet: true,
@@ -18,8 +18,8 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#ffffff",
+        foregroundImage: "./assets/images/icon.png",
+        backgroundColor: "#CCC2CA",
       },
       package: "com.loju.Zira",
     },
@@ -35,11 +35,24 @@ export default {
           origin: "https://loju.dev/",
         },
       ],
+      [
+        "expo-image-picker",
+        {
+          photosPermission: "Zira needs access to your photos.",
+        },
+      ],
       "expo-asset",
       [
         "expo-local-authentication",
         {
           faceIDPermission: "Allow Zira to use Face ID.",
+        },
+      ],
+      [
+        "expo-notifications",
+        {
+          icon: "./assets/images/notification-icon.png",
+          color: "#CCC2CA",
         },
       ],
     ],

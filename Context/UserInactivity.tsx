@@ -35,7 +35,7 @@ export const UserInactivityProvider = ({ children }: any) => {
           if (elapsedTime > 10000) {
             console.log(true);
             router.replace({
-              pathname: "/onboarding",
+              pathname: "/",
               params: {
                 sessionExpired: "true",
               },
