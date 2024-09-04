@@ -29,8 +29,8 @@ const Account = () => {
   const user = auth.currentUser;
   const userNum = useCodeStore((state) => state.number);
   const userId = useCodeStore((state) => state.id);
-  const [firstName, setFirstName] = useState("Unknown");
-  const [lastName, setLastName] = useState("Unknown");
+  const [firstName, setFirstName] = useState("Not set yet");
+  const [lastName, setLastName] = useState("Not set yet");
   const [image, setImage] = useState<null | string>(null);
   const [edit, setEdit] = useState(false);
   const [visible, setVisible] = useState(false);

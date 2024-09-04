@@ -29,7 +29,15 @@ import { Stack } from "expo-router";
 import { BlurView } from "expo-blur";
 import { useCodeStore } from "store/CodeStore";
 import { Image } from "expo-image";
-import { ref, onValue, push, update, remove } from "firebase/database";
+import {
+  ref,
+  onValue,
+  push,
+  update,
+  remove,
+  orderByChild,
+  serverTimestamp,
+} from "firebase/database";
 import { db } from "Config/firebase";
 
 const Chat = () => {
@@ -50,29 +58,34 @@ const Chat = () => {
     return onValue(ref(db, dbChatLocation), (querySnapShot) => {
       let data = querySnapShot.val() || [];
       if (data !== null) {
-        let ResultArray = Object.entries(data)
-          .toReversed()
-          .map((e) => Object.assign(e[1], { key: e[0] }));
+        let ResultArray = Object.entries(data).map((e) =>
+          Object.assign(e[1], { key: e[0] })
+        );
         // console.log(ResultArray, "kkkkk");
-        var Airesult = ResultArray.map((value) => ({
+        var Airesult = ResultArray.map((value: any) => ({
           _id: value.AImsg._id,
           text: value.AImsg.text,
+          createdAt: value.AImsg.createdAt,
           user: {
             _id: value.AImsg.user._id,
             name: value.AImsg.user.name,
           },
         }));
 
-        var Userresult = ResultArray.map((value) => ({
+        var Userresult = ResultArray.map((value: any) => ({
           _id: value.userMsg._id,
           text: value.userMsg.text,
+          createdAt: value.userMsg.createdAt,
           user: {
             _id: value.userMsg.user._id,
             name: value.userMsg.user.name,
           },
         }));
-        console.log(Airesult.concat(Userresult));
-        const allMsgs = Airesult.concat(Userresult);
+        console.log(Userresult);
+        // console.log(Airesult.concat(Userresult));
+        const allMsgs = Airesult.concat(Userresult).sort(
+          (a, b) => b.createdAt - a.createdAt
+        );
         setMessages(allMsgs);
       }
     });
@@ -87,7 +100,7 @@ const Chat = () => {
     const AImsg = {
       _id: Math.random().toString(36).substring(7),
       text: result.response.text().toLocaleLowerCase(),
-      createdAt: new Date(),
+      createdAt: Date.now(),
       user: {
         _id: 2,
         name: "Chatbot",
@@ -96,7 +109,7 @@ const Chat = () => {
     const userMsg = {
       _id: newMessages[0]._id,
       text: newMessages[0].text,
-      createdAt: newMessages[0].createdAt,
+      createdAt: Date.now(),
       user: {
         _id: userId,
         name: "Human",
@@ -180,6 +193,16 @@ const Chat = () => {
     );
   }, []);
 
+  const EmptyChat = useCallback((props: any) => {
+    return (
+      <View style={styles.empty}>
+        <Text style={styles.emptyText}>
+          Oops.No chat with Zira Ai just yet!
+        </Text>
+      </View>
+    );
+  }, []);
+
   return (
     <>
       <Stack.Screen
@@ -233,13 +256,14 @@ const Chat = () => {
             renderSystemMessage={renderSystemMessage}
             renderCustomView={renderCustomView}
             renderSend={renderSend}
+            renderChatEmpty={() => <EmptyChat />}
             keyboardShouldPersistTaps="never"
             timeTextStyle={{
               left: { color: "red" },
               right: { color: "yellow" },
             }}
             isTyping={isTyping}
-            inverted={Platform.OS !== "web"}
+            inverted={messages.length !== 0 ? true : false}
             infiniteScroll
             messagesContainerStyle={styles.container}
           />
@@ -258,6 +282,20 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: Colors.black,
+  },
+  empty: {
+    flex: 1,
+    backgroundColor: Colors.black,
+    transform: [{ scaleY: -1 }],
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 100,
+  },
+  emptyText: {
+    color: Colors.white,
+    fontWeight: "400",
+    fontSize: 15,
+    textAlign: "center",
   },
 });
 

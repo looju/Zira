@@ -55,122 +55,119 @@ const Home = () => {
   };
 
   return (
-    <Animated.View entering={FadeIn.duration(2000)}>
-      <ScrollView
-        style={styles.main}
-        contentContainerStyle={{ paddingTop: headerHeight * 0.4 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.account}>
-          <View style={styles.row}>
-            <Text style={styles.balance}>{numberFormat.format(balance())}</Text>
-            <Text style={styles.currency}>{currency}</Text>
+    <ScrollView
+      style={styles.main}
+      contentContainerStyle={{ paddingTop: headerHeight * 0.4 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.account}>
+        <View style={styles.row}>
+          <Text style={styles.balance}>{numberFormat.format(balance())}</Text>
+          <Text style={styles.currency}>{currency}</Text>
+        </View>
+      </View>
+      <View style={styles.actionRow}>
+        <RoundBtn
+          text={"Transact"}
+          icon="bank-plus"
+          onPress={() => addMoney()}
+        />
+        <RoundBtn
+          text={"Clear trx"}
+          icon="cash-remove"
+          onPress={() => clearTransaction()}
+        />
+        <Dropdown />
+      </View>
+      <Text style={defaultStyles.sectionHeader}>Transactions</Text>
+      {transactions.length === 0 && (
+        <Text style={styles.noTrx}>No transactions yet.</Text>
+      )}
+      {transactions.toReversed().map((transaction) => (
+        <View key={transaction.id} style={styles.transaction}>
+          <Text style={styles.date}>
+            {moment(transaction.date).format("ddd, MMMM Do YYYY, h:mm a")}
+          </Text>
+          <View style={styles.desc}>
+            {transaction.title == "First trx" &&
+              Math.sign(transaction.amount) == -1 && (
+                <View style={styles.descRow}>
+                  <MaterialCommunityIcons
+                    name="bank-transfer-out"
+                    size={24}
+                    color={Colors.red}
+                  />
+                  <Text style={styles.descText}>
+                    Your first trx action, withdrawal of{" "}
+                    <Text style={styles.amount2}>
+                      {currency}
+                      {numberFormat.format(transaction.amount)}
+                    </Text>{" "}
+                    successful
+                  </Text>
+                </View>
+              )}
+            {transaction.title == "First trx" &&
+              Math.sign(transaction.amount) == 1 && (
+                <View style={styles.descRow}>
+                  <MaterialCommunityIcons
+                    name="bank-transfer-in"
+                    size={24}
+                    color={Colors.green}
+                  />
+                  <Text style={styles.descText}>
+                    Your first trx action, deposit of{" "}
+                    <Text style={styles.amount}>
+                      {currency}
+                      {numberFormat.format(transaction.amount)}
+                    </Text>{" "}
+                    successful
+                  </Text>
+                </View>
+              )}
+            {transaction.title == "Deposit" && (
+              <>
+                <View style={styles.descRow}>
+                  <MaterialCommunityIcons
+                    name="bank-transfer-in"
+                    size={24}
+                    color={Colors.green}
+                  />
+                  <Text style={styles.descText}>
+                    Deposit action of{" "}
+                    <Text style={styles.amount}>
+                      {currency}
+                      {numberFormat.format(transaction.amount)}
+                    </Text>{" "}
+                    successful
+                  </Text>
+                </View>
+              </>
+            )}
+            {transaction.title == "Withdrawal" && (
+              <>
+                <View style={styles.descRow}>
+                  <MaterialCommunityIcons
+                    name="bank-transfer-out"
+                    size={24}
+                    color={Colors.red}
+                  />
+                  <Text style={styles.descText}>
+                    Withdrawal action of{" "}
+                    <Text style={styles.amount2}>
+                      {currency}
+                      {numberFormat.format(transaction.amount)}
+                    </Text>{" "}
+                    successful
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
         </View>
-        <View style={styles.actionRow}>
-          <RoundBtn
-            text={"Transact"}
-            icon="bank-plus"
-            onPress={() => addMoney()}
-          />
-          <RoundBtn
-            text={"Clear trx"}
-            icon="cash-remove"
-            onPress={() => clearTransaction()}
-          />
-          <Dropdown />
-        </View>
-        <Text style={defaultStyles.sectionHeader}>Transactions</Text>
-        {transactions.length === 0 && (
-          <Text style={styles.noTrx}>No transactions yet.</Text>
-        )}
-        {transactions.toReversed().map((transaction) => (
-          <View key={transaction.id} style={styles.transaction}>
-            <Text style={styles.date}>
-              {moment(transaction.date).format("ddd, MMMM Do YYYY, h:mm a")}
-            </Text>
-            <View style={styles.desc}>
-              {transaction.title == "First trx" &&
-                Math.sign(transaction.amount) == -1 && (
-                  <View style={styles.descRow}>
-                    <MaterialCommunityIcons
-                      name="bank-transfer-out"
-                      size={24}
-                      color={Colors.red}
-                    />
-                    <Text style={styles.descText}>
-                      Your first trx action, withdrawal of{" "}
-                      <Text style={styles.amount2}>
-                        {currency}
-                        {numberFormat.format(transaction.amount)}
-                      </Text>{" "}
-                      successful
-                    </Text>
-                  </View>
-                )}
-              {transaction.title == "First trx" &&
-                Math.sign(transaction.amount) == 1 && (
-                  <View style={styles.descRow}>
-                    <MaterialCommunityIcons
-                      name="bank-transfer-in"
-                      size={24}
-                      color={Colors.green}
-                    />
-                    <Text style={styles.descText}>
-                      Your first trx action, deposit of{" "}
-                      <Text style={styles.amount}>
-                        {currency}
-                        {numberFormat.format(transaction.amount)}
-                      </Text>{" "}
-                      successful
-                    </Text>
-                  </View>
-                )}
-              {transaction.title == "Deposit" && (
-                <>
-                  <View style={styles.descRow}>
-                    <MaterialCommunityIcons
-                      name="bank-transfer-in"
-                      size={24}
-                      color={Colors.green}
-                    />
-                    <Text style={styles.descText}>
-                      Deposit action of{" "}
-                      <Text style={styles.amount}>
-                        {currency}
-                        {numberFormat.format(transaction.amount)}
-                      </Text>{" "}
-                      successful
-                    </Text>
-                  </View>
-                </>
-              )}
-              {transaction.title == "Withdrawal" && (
-                <>
-                  <View style={styles.descRow}>
-                    <MaterialCommunityIcons
-                      name="bank-transfer-out"
-                      size={24}
-                      color={Colors.red}
-                    />
-                    <Text style={styles.descText}>
-                      Withdrawal action of{" "}
-                      <Text style={styles.amount2}>
-                        {currency}
-                        {numberFormat.format(transaction.amount)}
-                      </Text>{" "}
-                      successful
-                    </Text>
-                  </View>
-                </>
-              )}
-            </View>
-          </View>
-        ))}
-        {/* <Horizontal /> */}
-        <WidgetList />
-      </ScrollView>
-    </Animated.View>
+      ))}
+      <WidgetList />
+    </ScrollView>
   );
 };
 

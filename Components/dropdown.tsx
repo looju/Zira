@@ -18,10 +18,12 @@ import {
 } from "native-base";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 const { width } = Dimensions.get("screen");
 
 const Dropdown = () => {
   const [service, setService] = useState("");
+  const router = useRouter();
   return (
     <Menu
       w="190"
@@ -40,7 +42,9 @@ const Dropdown = () => {
         );
       }}
     >
-      <Menu.Item>Chat with Zira Ai 👋</Menu.Item>
+      <Menu.Item onPress={() => router.navigate("/(tabs)/chat")}>
+        Chat with Zira Ai 👋
+      </Menu.Item>
     </Menu>
   );
 };
