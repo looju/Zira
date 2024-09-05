@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+# Zira
+Zira is a cross-platform mobile fintech application that allows users to deposit, withdraw money to their account. It offers the latest crypto prices as well as more detailed info about the coin such as a graph of historical prices as well as links to their official documentation. It also offers AI one-on-one chat.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Recommended IDE Setup
 
-## Get started
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-1. Install dependencies
+## Project Setup
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Install
+Run the command below in order to install the latest versions of the dependencies
 
 ```bash
-npm run reset-project
+$ npx expo install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Development
 
-## Learn more
+```bash
+$ npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Build
+This build standalone application distributables . 
+## For android
+```bash
+$ eas build --platform android
+```
+## For ios
+```bash
+$ eas build --platform ios
+```
+[Check out Expo's docs on releasing standalone builds for more info](https://docs.expo.dev/build/setup/#build-for-android-emulatordevice-or-ios-simulator)
 
-## Join the community
+### Gallery
 
-Join our community of developers creating universal apps.
+<div>
+<img src="https://github.com/user-attachments/assets/e0966917-3070-489b-a8b4-3a176c51b179" width="400"/> <img src="https://github.com/user-attachments/assets/2ed7c9c3-d398-42ff-add4-325fdc5d5382" width="400" />  
+</div>
+<div>
+ <img src="https://github.com/user-attachments/assets/c35067f8-a454-4e61-8fd8-859be2e28456" width="400"/> <img src="https://github.com/user-attachments/assets/09db505d-f318-49e4-acde-c5a115e0b4eb" width="400" /> 
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+</div>
+<div>
+<img src="https://github.com/user-attachments/assets/6956a0dd-8476-4519-861d-898c280f3773" width="400" /> <img src="https://github.com/user-attachments/assets/ea99f752-730d-4944-b238-935e1349a5b1" width="400"/>
+
+</div>
+<div>
+<img src="https://github.com/user-attachments/assets/612b0dfe-ee7b-40b0-a2df-1a13df8b16ab" width="400"/> <img src="https://github.com/user-attachments/assets/9af713ef-cd4e-41d8-9aa5-6a7226ff8aba" width="400"/> 
+
+</div>
+
+
+
